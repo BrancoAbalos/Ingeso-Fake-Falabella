@@ -12,18 +12,18 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="app">
-        <header className="header">
+        <header className="headerArriba">
           <div className="left-area">
             <LogoPanel />
           </div>
 
           <div className="search-wrap">
-            <input className="search" placeholder="Buscar productos, marcas o categorías..." />
+            <input className="searchBarra" placeholder="Buscar productos, marcas o categorías..." />
           </div>
 
           <div className="right-area">
-            <Link to="/checkout" aria-label="Checkout"><CartIcon size={28} /></Link>
-            <Link to="/settings" aria-label="Settings"><SettingsIcon size={28} /></Link>
+            <Link to="/checkout" aria-label="Checkout" className='text-white'><CartIcon size={28} /></Link>
+            <Link to="/settings" aria-label="Settings" className='text-white'><SettingsIcon size={28} /></Link>
           </div>
         </header>
 
