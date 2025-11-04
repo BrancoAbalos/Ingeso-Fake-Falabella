@@ -1,12 +1,12 @@
-.root{--primary:#0070f3;--muted:#666}
+.root{--primary:#816754;--muted:#666}
 body{font-family:Inter,Segoe UI,Arial;margin:0;padding:0;background:#f7f7f8;color:#111}
-.headerArriba{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:#000152; /* más café */box-shadow:0 1px 0 rgba(0,0,0,0.08)}
+.headerArriba{display:flex;justify-content:space-between;align-items:center;padding:36px 24px;background:#816754; /* más café */box-shadow:0 1px 0 rgba(0,0,0,0.08)}
 .logoFaladeuda{font-family: "Momo Trust Display", sans-serif;
   font-weight: 400;
-  font-style: normal;color:#fffc3a;text-decoration:none;font-size:30px;letter-spacing:0.5px;margin-left:12px}
+  font-style: normal;color:#ffffff;text-decoration:none;font-size:30px;letter-spacing:0.5px;margin-left:12px}
 
 .left-area{display:flex;align-items:center;gap:18px}
-.right-area{display:flex;align-items:center;gap:22px}
+.right-area{display:flex;align-items:center;gap:40px}
 .right-area a{color:white}
 .right-area a svg{display:block}
 .logo-panel{position:absolute;left:0;top:60px;background:white;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.12);width:320px;z-index:30}

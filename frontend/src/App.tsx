@@ -5,14 +5,12 @@ import Checkout from './pages/Checkout'
 import Settings from './pages/Settings'
 import Home from './pages/Home'
 import LogoPanel from './components/LogoPanel'
-import SettingsIcon from './components/icons/SettingsIcon'
-import CartIcon from './components/icons/CartIcon'
-import { FiSettings } from 'react-icons/fi';
 import { RESOURCES, ROUTES } from './utils/constants';
 
 export default function App() {
   const [open, setOpen] = useState(false);
   const SettingComponent = RESOURCES.SettingIcon;
+  const ShoppingCart = RESOURCES.ShoppingCart;
   return (
     <BrowserRouter>
       <div className="app">
@@ -26,13 +24,19 @@ export default function App() {
           </div>
 
           <div className="right-area">
-            <Link to="/checkout" aria-label="Checkout" className='text-white'><CartIcon size={28} /></Link>
+            {/*Carrito de compras*/}
+            <Link to={ROUTES.CHECKOUT} title="Checkout">
+              <ShoppingCart
+                  id="view cart"
+                  className='w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-black'
+                />
+            </Link>
             {/*Icono de settings*/}
             <SettingComponent
               id="showInfo"
               onClick={() => setOpen(!open)}
-              className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white"
-              title="Configuracion"
+              className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+              title="Config"
             />
             {/*Dropdown*/}
             {open && (
