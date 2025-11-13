@@ -23,23 +23,24 @@ export default function App() {
             <input className="searchBarra" placeholder="Buscar productos, marcas o categorías..." />
           </div>
 
-          <div className="right-area">
+          <div className="right-area relative">
             {/*Carrito de compras*/}
             <Link to={ROUTES.CHECKOUT} title="Checkout">
               <ShoppingCart
                   id="view cart"
-                  className='w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-black'
+                  className='w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white'
                 />
             </Link>
             {/*Icono de settings*/}
             <SettingComponent
               id="showInfo"
               onClick={() => setOpen(!open)}
-              className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+              className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white"
               title="Config"
             />
             {/*Dropdown*/}
             {open && (
+                <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-lg py-2 w-40 z-50 border border-gray-200">
                 <div className="absolute right-0 top-20 bg-white rounded-md shadow-lg py-2 w-40 z-50">
                   <Link
                     to={ROUTES.LOGIN}
