@@ -40,7 +40,7 @@ export default function App() {
             />
             {/*Dropdown*/}
             {open && (
-                <div className="absolute right-0 top-12 bg-white rounded-md shadow-lg py-2 w-40 z-50">
+                <div className="absolute right-0 top-20 bg-white rounded-md shadow-lg py-2 w-40 z-50">
                   <Link
                     to={ROUTES.LOGIN}
                     className="w-full text-left px-4 py-2 text-red-700 hover:bg-gray-100 block"
