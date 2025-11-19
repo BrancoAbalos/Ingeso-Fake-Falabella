@@ -4,7 +4,13 @@ import { Product } from '../types'
 import { formatCurrency } from '../utils/format'
 import Button from './ui/Button'
 
-export default function ProductCard({ product }: { product: Product }){
+type ProductCardProps = {
+  product: Product
+  onAdd?: () => void
+  onRemove?: () => void
+}
+
+export default function ProductCard({ product, onAdd, onRemove }: ProductCardProps){
   return (
     <div className="card">
       <div className="product-thumb" title={product.title}>
@@ -28,9 +34,27 @@ export default function ProductCard({ product }: { product: Product }){
       </div>
       <p className="price">{formatCurrency(product.price)}</p>
       <div className="actions">
+        <Button
+          type="button"
+          variant="ghost"
+          aria-label="Disminuir cantidad"
+          onClick={onRemove}
+          disabled={!onRemove}
+        >
+          -
+        </Button>
         <Link to={`/product/${product.id}`}>
           <Button variant="secondary">Ver</Button>
         </Link>
+        <Button
+          type="button"
+          variant="ghost"
+          aria-label="Aumentar cantidad"
+          onClick={onAdd}
+          disabled={!onAdd}
+        >
+          +
+        </Button>
       </div>
     </div>
   )
