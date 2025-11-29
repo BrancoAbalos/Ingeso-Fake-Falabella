@@ -12,6 +12,7 @@ export const RESOURCES = Object.freeze({
 // Route Constants
 export const ROUTES = Object.freeze({
   LOGIN: '/login',
+  REGISTER: '/register',
   SETTINGS: '/settings',
   CHECKOUT: '/checkout',
 

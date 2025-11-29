@@ -4,6 +4,7 @@ import Product from './pages/Product'
 import Checkout from './pages/Checkout'
 import Settings from './pages/Settings'
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Home from './pages/Home'
 import LogoPanel from './components/LogoPanel'
 import { RESOURCES, ROUTES } from './utils/constants';
@@ -100,6 +101,7 @@ export default function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </main>
       </div>
