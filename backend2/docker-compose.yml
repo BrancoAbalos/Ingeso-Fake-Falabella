@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Nombre de nuestro servicio
+  db:
+    # La "imagen" es como el instalador oficial. Usaremos PostgreSQL versión 15.
+    # Si prefieres MySQL, cambiarías esto a 'mysql:8.0'
+    image: postgres:15
+
+    # El nombre que tendrá el contenedor en tu Docker Desktop para identificarlo fácil
+    container_name: mi_base_de_datos_nextjs
+
+    # Reiniciar siempre si se cae o si reinicias la PC (opcional, pero útil)
+    restart: always
+
+    # Variables de entorno para configurar el usuario y contraseña iniciales
+    environment:
+      POSTGRES_USER: usuario_dev
+      POSTGRES_PASSWORD: password_seguro
+      POSTGRES_DB: mi_app_db
+
+    # Mapeo de puertos:
+    # El 5432 de la izquierda es el puerto en TU computadora (localhost).
+    # El 5432 de la derecha es el puerto DENTRO de Docker.
+    ports:
+      - "5432:5432"
+
+    # Volúmenes: Esto es CRITICO.
+    # Sin esto, si apagas Docker, pierdes tus datos.
+    # Esto le dice a Docker: "Guarda los datos de la DB en un disco virtual persistente".
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+# Definición del volumen (el disco virtual)
+  nextjs:
+   build: .
+   container_name: "nextjs"
+   restart: always
+   ports:
+     - "3000:3000"
+   environment:
+      DATABASE_URL: "postgresql://usuario_dev:password_seguro@localhost:5432/mi_app_db?schema=public"
+      NODE_ENV: "production"
+   depends_on:
+     - db
+volumes:
+  postgres_data:

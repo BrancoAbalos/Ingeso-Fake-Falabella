@@ -8,6 +8,16 @@ import LogoPanel from './components/LogoPanel'
 import { RESOURCES, ROUTES } from './utils/constants';
 
 export default function App() {
+  const [cartCount, setCartCount] = React.useState(0)
+
+  const handleAddToCart = React.useCallback(() => {
+    setCartCount(count => count + 1)
+  }, [])
+
+  const handleRemoveFromCart = React.useCallback(() => {
+    setCartCount(count => (count > 0 ? count - 1 : 0))
+  }, [])
+
   const [open, setOpen] = useState(false);
   const SettingComponent = RESOURCES.SettingIcon;
   const ShoppingCart = RESOURCES.ShoppingCart;
@@ -23,6 +33,9 @@ export default function App() {
             <input className="searchBarra" placeholder="Buscar productos, marcas o categorías..." />
           </div>
 
+          <div className="right-area">
+            <Link to="/checkout" aria-label="Checkout"><CartIcon size={28} count={cartCount} /></Link>
+            <Link to="/settings" aria-label="Settings"><SettingsIcon size={28} /></Link>
           <div className="right-area relative">
             {/*Carrito de compras*/}
             <Link to={ROUTES.CHECKOUT} title="Checkout">
@@ -61,7 +74,7 @@ export default function App() {
         <main className="content">
           <Routes>
             <Route path="/settings" element={<Settings />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home onAddToCart={handleAddToCart} onRemoveFromCart={handleRemoveFromCart} />} />
             <Route path="/product/:id" element={<Product />} />
             <Route path="/checkout" element={<Checkout />} />
           </Routes>
