@@ -10,9 +10,9 @@ export default function Product(){
   if(!product) return <div>Producto no encontrado</div>
 
   return (
-    <div className="product-page">
-      <h2>{product.title}</h2>
-      <p>{formatCurrency(product.price)}</p>
+    <div className="product-page bg-[#331b0b] p-6 rounded-lg shadow-md">
+      <h2 className='text-white'>{product.title}</h2>
+      <p className='text-white'>{formatCurrency(product.price)}</p>
     </div>
   )
 }
