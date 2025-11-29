@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState, useRef, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Product from './pages/Product'
 import Checkout from './pages/Checkout'
@@ -21,6 +21,24 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const SettingComponent = RESOURCES.SettingIcon;
   const ShoppingCart = RESOURCES.ShoppingCart;
+
+  //Referencia para el contenedor del menú
+  const menuRef = useRef<HTMLDivElement>(null);
+  //Efecto para detectar clicks fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -28,46 +46,49 @@ export default function App() {
           <div className="left-area">
             <LogoPanel />
           </div>
-
           <div className="search-wrap">
-            <input className="searchBarra" placeholder="Buscar productos, marcas o categorías..." />
+            <input className="searchBarra" placeholder="Buscar productos..." />
           </div>
 
-          <div className="right-area">
-            <Link to="/checkout" aria-label="Checkout"><CartIcon size={28} count={cartCount} /></Link>
-            <Link to="/settings" aria-label="Settings"><SettingsIcon size={28} /></Link>
-          <div className="right-area relative">
-            {/*Carrito de compras*/}
+          <div className="right-area flex items-center gap-4"> 
+            
             <Link to={ROUTES.CHECKOUT} title="Checkout">
               <ShoppingCart
                   id="view cart"
                   className='w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white'
                 />
             </Link>
-            {/*Icono de settings*/}
-            <SettingComponent
-              id="showInfo"
-              onClick={() => setOpen(!open)}
-              className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white"
-              title="Config"
-            />
-            {/*Dropdown*/}
-            {open && (
-                <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-lg py-2 w-40 z-50 border border-gray-200">
-                  <Link
-                    to={ROUTES.LOGIN}
-                    className="w-full text-left px-4 py-2 text-red-700 hover:bg-gray-100 block"
-                  >
-                    <p className ='text-gray-900'> Login</p>
-                  </Link>
-                  <Link
-                    to={ROUTES.SETTINGS}
-                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 block"
-                  >
-                    <p className ='text-gray-900'> Settings</p>
-                  </Link>
-                </div>
-              )}
+
+            <div className="relative" ref={menuRef}>
+                
+                {/* Icono de settings */}
+                <SettingComponent
+                  id="showInfo"
+                  onClick={() => setOpen(!open)}
+                  className="w-8 h-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 text-white"
+                  title="Config"
+                />
+
+                {/* Dropdown */}
+                {open && (
+                    <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-lg py-2 w-40 z-50 border border-gray-200">
+                      <Link
+                        to={ROUTES.LOGIN}
+                        className="w-full text-left px-4 py-2 text-red-700 hover:bg-gray-100 block"
+                        onClick={() => setOpen(false)}
+                      >
+                        <p className ='text-gray-900'> Login</p>
+                      </Link>
+                      <Link
+                        to={ROUTES.SETTINGS}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 block"
+                        onClick={() => setOpen(false)}
+                      >
+                        <p className ='text-gray-900'> Settings</p>
+                      </Link>
+                    </div>
+                  )}
+            </div>
           </div>
         </header>
 
