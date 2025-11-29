@@ -34,7 +34,7 @@ return (
             <div className="bg-[#8B6E5F] rounded-3xl p-6 shadow-xl text-center text-white sticky top-24">
               <div className="relative w-24 h-24 mx-auto mb-4">
                 <div className="w-full h-full bg-yellow-400 rounded-full flex items-center justify-center text-[#3E2723] text-4xl font-bold border-4 border-white/20">
-                    JP
+                    NR
                 </div>
                 <button className="absolute bottom-0 right-0 bg-white text-[#3E2723] p-1.5 rounded-full shadow-md hover:bg-gray-100">
                     <Edit2 size={14} />
