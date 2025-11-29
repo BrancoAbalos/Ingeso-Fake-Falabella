@@ -14,7 +14,7 @@ const PRODUCTS = [
   { id: 101, name: 'Eristoff', price: 5990, img: 'https://storage.googleapis.com/liquidos-public/products/large/1334068.png' },
   { id: 102, name: 'Absolut Blue', price: 11990, img: 'https://i0.wp.com/8barrelsclub.com/wp-content/uploads/2021/06/Absolut-Blue-70cl-2-1.png?fit=1000%2C1000&ssl=1' },
   { id: 103, name: 'Absolut Rasp', price: 12990, img: 'https://storage.googleapis.com/liquidos-public/products/large/1334058_lg.png' },
-  { id: 104, name: 'Eristoff Black', price: 4990, img: 'https://www.petitceller.com/media/catalog/product/c/c/cccbbcd5a271b908c38b893a64b47bb8380c1e4309c55c41dc6709c9ddf00a55.jpeg' },
+  { id: 104, name: 'Eristoff Black', price: 4990, img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSb09R-6vgFOaH06b_hKUMyUpFQbzI6BcdJpQEhStxMKctveEKbvgkZDNrTnavi3iB9ZUXedAiobylta4qsozHG9neSWEJHOV2xYDwQ5w' },
   { id: 105, name: 'Absolut Colors', price: 25990, img: 'https://img.thewhiskyexchange.com/540/vodka_abs75.jpg' },
 ];
 
@@ -25,66 +25,38 @@ interface HomeProps {
 
 export default function Home({ onAddToCart }: HomeProps) {
   return (
-    <div className="w-full pb-20">
-      
-      {/* Flex container centrado con gap */}
-      <section className="py-12 px-4 flex flex-wrap justify-center gap-8 md:gap-12">
-        {TOP_PICKS.map((item) => (
-          <div key={item.id} className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
-            {/* El círculo gris de fondo */}
-            <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gray-400 shadow-inner flex items-center justify-center relative overflow-visible mb-4">
-              {/* Imagen de la botella */}
-              <img 
-                src={item.img} 
-                alt={item.name} 
-                className="h-56 md:h-64 object-contain -mt-10 drop-shadow-xl transition-all group-hover:-mt-14"
-              />
-              
-              {/* Etiqueta amarilla [x6]) toma nota mario hugo*/}
-              {item.label && (
-                <span className="absolute top-4 right-2 bg-yellow-400 text-black font-bold px-2 py-1 rounded text-xs shadow-sm">
-                  {item.label}
-                </span>
-              )}
-            </div>
-            {/* Nombre opcional debajo */}
-            <p className="font-semibold text-gray-700">{item.name}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* Grilla de Productos */}
-      <section className="bg-gray-400 backdrop-blur-sm mx-4 md:mx-12 rounded-3xl p-8 shadow-sm">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-          {PRODUCTS.map((prod) => (
-            <div key={prod.id} className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-white/40 transition-colors">
-              
-              {/* Imagen Producto */}
-              <div className="h-48 w-full flex items-center justify-center mb-4">
-                <img 
-                  src={prod.img} 
-                  alt={prod.name} 
-                  className="h-full object-contain drop-shadow-md"
-                />
+    <div className="w-full pb-20 fade-in">
+      <section className="py-5 px-4">
+        <h2 className="text-gray-900 font-bold text-lg mb-6 ml-4 md:ml-12 uppercase tracking-wide opacity-90">Destacados</h2>
+        <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+          {TOP_PICKS.map((item) => (
+            <div key={item.id} className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
+              <div className={`w-32 h-32 md:w-40 md:h-40 rounded-full ${'bg-gray-400'} shadow-inner flex items-center justify-center relative overflow-visible mb-4 ring-4 ring-white`}>
+                <img src={item.img} alt={item.name} className="h-40 md:h-52 object-contain -mt-8 drop-shadow-2xl transition-all group-hover:-mt-12 filter hover:brightness-110" />
+                {item.label && <span className="absolute top-0 right-0 bg-yellow-400 text-black font-bold px-2 py-1 rounded-full text-xs shadow-md border-2 border-white">{item.label}</span>}
               </div>
-
-              {/* Precio */}
-              <p className="text-xl text-white font-light mb-4 drop-shadow-md">
-                {prod.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-              </p>
-
-              {/* Botón Añadir */}
-              <button 
-                onClick={onAddToCart}
-                className="bg-[#2D2D2D] hover:bg-black text-white text-sm font-medium py-2 px-6 rounded shadow-md transition-all hover:shadow-lg active:scale-95"
-              >
-                Añadir al Carro
-              </button>
             </div>
           ))}
         </div>
       </section>
 
+      <section className="bg-gray-400 backdrop-blur-md mx-4 md:mx-12 rounded-3xl p-6 md:p-8 shadow-inner">
+        <h2 className="text-gray-700 font-bold text-2xl mb-6 drop-shadow-sm">Catálogo</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {PRODUCTS.map((prod) => (
+            <div key={prod.id} className="bg-white/40 backdrop-blur-sm p-4 rounded-2xl hover:bg-white/80 transition-all duration-300 flex flex-col items-center text-center shadow-sm hover:shadow-xl group relative">
+              <div className="h-32 w-full flex items-center justify-center mb-3">
+                <img src={prod.img} alt={prod.name} className="h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <h3 className="font-semibold text-gray-800 text-sm mb-1">{prod.name}</h3>
+              <p className="text-lg text-gray-900 font-bold mb-3">{prod.price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+              <button onClick={onAddToCart} className="bg-[#2D2D2D] hover:bg-black text-white text-xs md:text-sm font-medium py-2 px-4 rounded-full shadow-lg transition-all active:scale-95 w-full flex items-center justify-center gap-2">
+                <span>+</span> Añadir
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
-}
+};
