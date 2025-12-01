@@ -6,7 +6,7 @@ export default function Register() {
     <div className="min-h-screen flex items-start justify-center pt-20 bg-gray-200">
       
       {/* Caja princial */}
-      <div className="bg-[#8B6E5F] w-full max-w-4xl px-8 py-10 rounded-3xl shadow-lg flex flex-col items-center text-center">
+      <div className="bg-[#8B6E5F] w-full max-w-xl px-8 py-10 rounded-3xl shadow-lg flex flex-col items-center text-center">
         
         {/* Icono */}
         <div className="mb-2">
