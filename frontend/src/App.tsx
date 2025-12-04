@@ -13,8 +13,10 @@ import { ShoppingCart, Settings, User, Search, Menu, X, ChevronRight } from 'luc
 export default function App() {
   const [cartCount, setCartCount] = React.useState(0)
 
-  const handleAddToCart = React.useCallback(() => {
-    setCartCount(count => count + 1)
+  const handleAddToCart = React.useCallback((productId: string, n = 1) => {
+    const qty = Number.isFinite(Number(n)) ? Number(n) : 1
+    if (qty <= 0) return
+    setCartCount(count => count + qty)
   }, [])
 
   const handleRemoveFromCart = React.useCallback(() => {
@@ -64,11 +66,9 @@ export default function App() {
             
             <Link to={ROUTES.CHECKOUT} title="Checkout" className="relative p-2 hover:bg-white/10 rounded-full transition-colors">
               <ShoppingCart className='w-6 h-6' />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-bounce">
-                  {cartCount}
-                </span>
-              )}
+              <span className={`absolute top-0 right-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ${cartCount > 0 ? 'bg-red-500 animate-bounce' : 'bg-gray-500 opacity-70'}`}>
+                {cartCount}
+              </span>
             </Link>
 
             {/* Menu Dropdown */}
@@ -118,7 +118,7 @@ export default function App() {
           <Routes>
             <Route path="/settings" element={<SettingRoute />} />
             <Route path="/" element={<Home onAddToCart={handleAddToCart} onRemoveFromCart={handleRemoveFromCart} />} />
-            <Route path="/product/:id" element={<Product />} />
+            <Route path="/product/:id" element={<Product onAddToCart={handleAddToCart} />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
