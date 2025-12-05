@@ -87,7 +87,7 @@ export default function Payment({ cart, onClear }: PaymentProps) {
 
             <form onSubmit={handlePay} className="space-y-5">
                 <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre en la tarjeta</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre Titular</label>
                 <input 
                     name="name"
                     type="text" 
