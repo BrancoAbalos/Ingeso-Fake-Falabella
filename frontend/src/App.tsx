@@ -68,20 +68,20 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="app min-h-screen bg-gray-200 font-sans">
-        <header className="bg-[#3E2723] text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-50">
+      <div className="app min-h-screen bg-gray-200 font-sans print:bg-white">
+        <header className="bg-[#3E2723] text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-50 print:hidden">
           <Link to={ROUTES.HOME}><LogoPanel /></Link>
           <div className="hidden md:block flex-1 max-w-xl mx-4 relative">
-            <input className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Buscar..." />
-            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+              <input className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Buscar..." />
+              <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
           </div>
           <div className="flex items-center gap-4">
-            <Link to={ROUTES.CHECKOUT} title="Checkout" className="relative p-2 hover:bg-white/10 rounded-full transition-colors">
+            <Link to={ROUTES.CHECKOUT} className="relative p-2 hover:bg-white/10 rounded-full">
               <ShoppingCart className='w-6 h-6' />
-              <span className={`absolute top-0 right-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ${cartCount > 0 ? 'bg-red-500 animate-bounce' : 'bg-gray-500 opacity-70'}`}>
+                <span className={`absolute top-0 right-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ${cartCount > 0 ? 'bg-red-500 animate-bounce' : 'bg-gray-500 opacity-70'}`}>
                 {cartCount}
-              </span>
-            </Link>
+                </span>            
+              </Link>
             <div className="relative" ref={menuRef}>
                 <button onClick={() => setOpen(!open)} className="p-2 hover:bg-white/10 rounded-full">
                   {open ? <X className="w-6 h-6" /> : <Settings className="w-6 h-6" />}
