@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductDetail from './pages/Product';
 import LogoPanel from './components/LogoPanel';
+import Payment from './pages/Payment';
 import { ROUTES } from './utils/constants';
 
 // Tipos compartidos
@@ -99,6 +100,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home onAddToCart={handleAddToCart} />} />
             <Route path="/checkout" element={<Checkout cart={cart} onAddOne={handleAddOne} onRemoveOne={handleRemoveOne} onClear={handleClearCart} />} />
+            <Route path="/payment" element={<Payment cart={cart} onClear={handleClearCart} />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

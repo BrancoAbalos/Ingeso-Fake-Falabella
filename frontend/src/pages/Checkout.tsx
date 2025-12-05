@@ -18,13 +18,9 @@ export default function Checkout({ cart, onAddOne, onRemoveOne, onClear }: Check
   const envio = subtotal > 20000 ? 0 : 2500;
   const total = subtotal + envio;
 
-  const handlePayment = () => {
+  const handleGoToPayment = () => {
     if(cart.length === 0) return;
-    const confirm = window.confirm(`¿Pagar un total de ${total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}?`);
-    if(confirm) {
-        onClear();
-        navigate(ROUTES.HOME);
-    }
+    navigate(ROUTES.PAYMENT);
   };
 
   if (cart.length === 0) {
@@ -78,7 +74,7 @@ export default function Checkout({ cart, onAddOne, onRemoveOne, onClear }: Check
               <div className="flex justify-between text-gray-600"><span>Envío</span><span>{envio === 0 ? 'GRATIS' : envio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
             </div>
             <div className="flex justify-between items-center mb-8"><span className="text-2xl font-bold text-gray-800">Total</span><span className="text-2xl font-bold text-[#3E2723]">{total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</span></div>
-            <button onClick={handlePayment} className="w-full bg-[#3E2723] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-[#5D4037] flex items-center justify-center gap-2"><CreditCard size={20} /> Ir a Pagar</button>
+            <button onClick={handleGoToPayment} className="w-full bg-[#3E2723] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-[#5D4037] flex items-center justify-center gap-2"><CreditCard size={20} /> Ir a Pagar</button>
             <div className="mt-4 flex items-center justify-center gap-2 text-gray-400 text-xs"><Shield size={12} /><span>Pago 100% Seguro</span></div>
           </div>
         </div>

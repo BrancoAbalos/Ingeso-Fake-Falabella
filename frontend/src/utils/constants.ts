@@ -10,6 +10,7 @@ export const ROUTES = Object.freeze({
   LOGIN: '/login',
   REGISTER: '/register',
   SETTINGS: '/settings',
+  PAYMENT: '/payment',
   CHECKOUT: '/checkout',
 
   HOME: '/',
