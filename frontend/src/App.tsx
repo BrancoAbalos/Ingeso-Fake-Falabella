@@ -28,6 +28,7 @@ export interface CartItem {
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -70,9 +71,14 @@ export default function App() {
     <BrowserRouter>
       <div className="app min-h-screen bg-gray-200 font-sans print:bg-white">
         <header className="bg-[#3E2723] text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-50 print:hidden">
-          <Link to={ROUTES.HOME}><LogoPanel /></Link>
+          <Link to={ROUTES.HOME} onClick={() => setSearchTerm("")}><LogoPanel /></Link>
           <div className="hidden md:block flex-1 max-w-xl mx-4 relative">
-              <input className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Buscar..." />
+              <input 
+                className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500" 
+                placeholder="Buscar licores, cervezas..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
               <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
           </div>
           <div className="flex items-center gap-4">
@@ -98,7 +104,7 @@ export default function App() {
 
         <main>
           <Routes>
-            <Route path="/" element={<Home onAddToCart={handleAddToCart} />} />
+            <Route path="/" element={<Home onAddToCart={handleAddToCart} searchTerm={searchTerm} />} /> 
             <Route path="/checkout" element={<Checkout cart={cart} onAddOne={handleAddOne} onRemoveOne={handleRemoveOne} onClear={handleClearCart} />} />
             <Route path="/payment" element={<Payment cart={cart} onClear={handleClearCart} />} />
             <Route path="/product/:id" element={<ProductDetail />} />
