@@ -1,9 +1,9 @@
 export type Product = {
-  id: string
+  id: string;
   name: string;
-  price: number // en CLP centavos
-  image?: string
-  title?: string; // Para compatibilidad con tu JSON
+  price: number;
+  image?: string;
+  title?: string;
   description?: string;
   isFeatured?: boolean;
 }
