@@ -11,7 +11,7 @@
     { "id": "201", "name": "Corona", "price": 4990, "img": "https://static.vecteezy.com/system/resources/previews/037/751/355/non_2x/corona-extra-beer-bottle-isolated-on-a-transparent-background-free-png.png", "isFeatured": true, "description": "Cerveza lager clara y refrescante, perfecta para compartir." },
     { "id": "202", "name": "Alto del Carmen", "price": 7990, "img": "https://www.distribuidoralamartina.cl/wp-content/uploads/2021/04/alto-del-carmen-35-1lt.png", "isFeatured": true, "description": "Pisco tradicional chileno, con cuerpo y notas herbales." },
     { "id": "203", "name": "Vino Selecto Frutal", "price": 4590, "img": "https://storage.googleapis.com/liquidos-public/products/large/1453005.png", "isFeatured": true, "description": "Vino joven con perfil frutal, fácil de beber en cualquier ocasión." },
-    { "id": "204", "name": "Fireball", "price": 9990, "img": "https://www.fireballwhisky.com/content/dam/sazerac/final/north-america/shooters/fireball/archived-do-not-use/bottle/Fireball_Whisky_Bottle_Transparent_BackGROUND.png", "isFeatured": true, "description": "Whisky con sabor a canela, picante y dulce — ideal para shots." },
+    { "id": "204", "name": "Fireball", "price": 9990, "img": "https://store.sazerachouse.com/media/catalog/product/p/f/pfcw0094_inflatable_bottle_3_main.png?quality=80&fit=bounds&height=&width=", "isFeatured": true, "description": "Whisky con sabor a canela, picante y dulce — ideal para shots." },
     { "id": "205", "name": "Jack Daniels Honey", "price": 15990, "img": "https://cdnx.jumpseller.com/glops/image/37723937/resize/719/719?1733415383", "isFeatured": true, "description": "Whisky Tennessee infusionado con miel, suave y con dulzor agradable." }
   ]
 }

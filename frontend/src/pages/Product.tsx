@@ -46,7 +46,7 @@ export default function Product({ onAddToCart }: ProductProps){
   return (
     <div className="product-page max-w-screen-2xl mx-auto bg-white/5 p-6 rounded-lg shadow-md text-gray-900">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-        {/* Left: vertical recommendations (separated container for contrast) */}
+        {/* recomendaciones del lado izquierdo left left  */}
         <aside className="hidden md:block">
           <div className="bg-white/6 p-4 rounded-2xl shadow-lg border border-white/5 sticky top-24">
             <h3 className="text-gray-700 font-bold mb-4">Recomendados</h3>
@@ -67,7 +67,7 @@ export default function Product({ onAddToCart }: ProductProps){
           </div>
         </aside>
 
-        {/* Right: main product, span 2 columns on md */}
+        {/* producto main*/}
         <div className="md:col-span-2">
           <div className="flex items-center justify-center bg-white/10 rounded-lg p-4 mb-6">
             {product.img ? (

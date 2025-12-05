@@ -1,127 +1,108 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import Product from './pages/Product'
-import Checkout from './pages/Checkout'
-import SettingRoute from './pages/Settings'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { ShoppingCart, Settings, Search, X, ChevronRight } from 'lucide-react';
+
+// Importaciones
+import Home from './pages/Home';
+import Checkout from './pages/Checkout';
+import SettingsPage from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Home from './pages/Home'
-import LogoPanel from './components/LogoPanel'
-import { RESOURCES, ROUTES } from './utils/constants';
-import { ShoppingCart, Settings, User, Search, Menu, X, ChevronRight } from 'lucide-react';
+import ProductDetail from './pages/Product';
+import LogoPanel from './components/LogoPanel';
+import { ROUTES } from './utils/constants';
+
+// Tipos compartidos
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+}
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 export default function App() {
-  const [cartCount, setCartCount] = React.useState(0)
-
-  const handleAddToCart = React.useCallback((productId: string, n = 1) => {
-    const qty = Number.isFinite(Number(n)) ? Number(n) : 1
-    if (qty <= 0) return
-    setCartCount(count => count + qty)
-  }, [])
-
-  const handleRemoveFromCart = React.useCallback(() => {
-    setCartCount(count => (count > 0 ? count - 1 : 0))
-  }, [])
-
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
-
-  //Referencia para el contenedor del menú
   const menuRef = useRef<HTMLDivElement>(null);
-  //Efecto para detectar clicks fuera
+
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Agrega producto completo
+  const handleAddToCart = (product: Product) => {
+    setCart((prevCart) => {
+      const exists = prevCart.find((item) => item.product.id === product.id);
+      if (exists) {
+        return prevCart.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { product, quantity: 1 }];
+    });
+  };
+
+  const handleRemoveOne = (id: string) => {
+    setCart((prev) => prev.map(item => item.product.id === id ? { ...item, quantity: item.quantity - 1 } : item).filter(i => i.quantity > 0));
+  };
+
+  const handleAddOne = (id: string) => {
+    setCart((prev) => prev.map(item => item.product.id === id ? { ...item, quantity: item.quantity + 1 } : item));
+  };
+
+  const handleClearCart = () => setCart([]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-
 
   return (
     <BrowserRouter>
-      <div className="app min-h-screen bg-gray-200 font-sans selection:bg-yellow-200">
-        
-        {/* HEADER */}
-        <header className="headerArriba bg-[#3E2723] text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-50 border-b border-white/10">
-          <div className="left-area hover:opacity-80 transition-opacity">
-            <Link to={ROUTES.HOME}><LogoPanel /></Link>
+      <div className="app min-h-screen bg-gray-200 font-sans">
+        <header className="bg-[#3E2723] text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-50">
+          <Link to={ROUTES.HOME}><LogoPanel /></Link>
+          <div className="hidden md:block flex-1 max-w-xl mx-4 relative">
+            <input className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Buscar..." />
+            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
           </div>
-          
-          <div className="search-wrap flex-1 max-w-xl mx-4 hidden md:block group">
-            <div className="relative">
-              <input 
-                className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" 
-                placeholder="Buscar licores, cervezas..." 
-              />
-              <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400 group-focus-within:text-yellow-600" />
-            </div>
-          </div>
-
-          <div className="right-area flex items-center gap-4 md:gap-6"> 
-            
+          <div className="flex items-center gap-4">
             <Link to={ROUTES.CHECKOUT} title="Checkout" className="relative p-2 hover:bg-white/10 rounded-full transition-colors">
               <ShoppingCart className='w-6 h-6' />
               <span className={`absolute top-0 right-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ${cartCount > 0 ? 'bg-red-500 animate-bounce' : 'bg-gray-500 opacity-70'}`}>
                 {cartCount}
               </span>
             </Link>
-
-            {/* Menu Dropdown */}
             <div className="relative" ref={menuRef}>
-                <button 
-                  onClick={() => setOpen(!open)}
-                  className={`p-2 rounded-full transition-all duration-200 ${open ? 'bg-white text-[#3E2723] rotate-90' : 'hover:bg-white/10 text-white'}`}
-                  title="Configuración"
-                >
+                <button onClick={() => setOpen(!open)} className="p-2 hover:bg-white/10 rounded-full">
                   {open ? <X className="w-6 h-6" /> : <Settings className="w-6 h-6" />}
                 </button>
-
                 {open && (
-                    <div className="absolute right-0 top-full mt-3 bg-white rounded-2xl shadow-2xl py-2 w-56 z-50 overflow-hidden border border-gray-100 transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2">
-                      <div className="px-4 py-3 border-b border-gray-100 mb-1">
-                        <p className="text-xs font-bold text-gray-400 uppercase">Mi Cuenta</p>
-                      </div>
-                      
-                      <Link
-                        to={ROUTES.LOGIN}
-                        className="w-full px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#3E2723] flex items-center justify-between group transition-colors"
-                        onClick={() => setOpen(false)}
-                      >
-                        <span className="font-medium text-gray-900">Iniciar Sesión</span>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#3E2723]" />
-                      </Link>
-                      
-                      <Link
-                        to={ROUTES.SETTINGS}
-                        className="w-full px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#3E2723] flex items-center justify-between group transition-colors"
-                        onClick={() => setOpen(false)}
-                      >
-                        <span className="font-medium text-gray-900">Configuración</span>
-                        <Settings className="w-4 h-4 text-gray-300 group-hover:text-[#3E2723]" />
-                      </Link>
-
-                      <div className="px-4 py-2 mt-1 border-t border-gray-100 bg-gray-50">
-                        <p className="text-[10px] text-center text-gray-400">Versión del papu</p>
-                      </div>
+                    <div className="absolute right-0 top-full mt-3 bg-white rounded-2xl shadow-xl py-2 w-56 z-50 text-gray-800 overflow-hidden">
+                      <Link to={ROUTES.LOGIN} onClick={() => setOpen(false)} className="px-6 py-3 hover:bg-gray-50 flex items-center justify-between"><span>Login</span><ChevronRight size={16}/></Link>
+                      <Link to={ROUTES.SETTINGS} onClick={() => setOpen(false)} className="px-6 py-3 hover:bg-gray-50 flex items-center justify-between"><span>Config</span><Settings size={16}/></Link>
                     </div>
-                  )}
+                )}
             </div>
           </div>
         </header>
 
-        <main className="content">
+        <main>
           <Routes>
-            <Route path="/settings" element={<SettingRoute />} />
-            <Route path="/" element={<Home onAddToCart={handleAddToCart} onRemoveFromCart={handleRemoveFromCart} />} />
-            <Route path="/product/:id" element={<Product onAddToCart={handleAddToCart} />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/" element={<Home onAddToCart={handleAddToCart} />} />
+            <Route path="/checkout" element={<Checkout cart={cart} onAddOne={handleAddOne} onRemoveOne={handleRemoveOne} onClear={handleClearCart} />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
       </div>

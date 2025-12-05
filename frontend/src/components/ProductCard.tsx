@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Product } from '../types'
 import { formatCurrency } from '../utils/format'
-import Button from './ui/Button'
+import { Button } from './ui/Button'; 
 
 type ProductCardProps = {
   product: Product
