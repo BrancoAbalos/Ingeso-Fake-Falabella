@@ -34,30 +34,150 @@ export default function App() {
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Agrega producto completo
-  const handleAddToCart = (product: Product) => {
-    setCart((prevCart) => {
-      const exists = prevCart.find((item) => item.product.id === product.id);
-      if (exists) {
-        return prevCart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  // Agrega producto completo (intenta persistir en backend)
+  const handleAddToCart = async (product: Product) => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+    try {
+      // Call backend to add to cart (quantity 1)
+      const res = await fetch(`${API_BASE}/api/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, quantity: 1 })
+      })
+
+      if (!res.ok) {
+        // fallback to local behavior
+        setCart((prevCart) => {
+          const exists = prevCart.find((item) => item.product.id === product.id);
+          if (exists) {
+            return prevCart.map((item) =>
+              item.product.id === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            );
+          }
+          return [...prevCart, { product, quantity: 1 }];
+        });
+        return
       }
-      return [...prevCart, { product, quantity: 1 }];
-    });
+
+      const data = await res.json()
+      // data.item: { product, quantity }
+      const added = data.item
+      if (added && added.product) {
+        setCart((prev) => {
+          const exists = prev.find(i => i.product.id === added.product.id)
+          if (exists) {
+            return prev.map(i => i.product.id === added.product.id ? { ...i, quantity: added.quantity } : i)
+          }
+          return [...prev, { product: added.product, quantity: added.quantity }]
+        })
+      }
+    } catch (e) {
+      // network or other error: fallback to local
+      setCart((prevCart) => {
+        const exists = prevCart.find((item) => item.product.id === product.id);
+        if (exists) {
+          return prevCart.map((item) =>
+            item.product.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+        return [...prevCart, { product, quantity: 1 }];
+      });
+    }
   };
 
-  const handleRemoveOne = (id: string) => {
+  const handleRemoveOne = async (id: string) => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+    try {
+      const res = await fetch(`${API_BASE}/api/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: id, quantity: -1 })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const item = data.item
+        setCart((prev) => {
+          if (!item || !item.product) {
+            // if backend returned no item, remove locally
+            return prev.filter(i => i.product.id !== id)
+          }
+          const qty = Number(item.quantity || 0)
+          if (qty <= 0) return prev.filter(i => i.product.id !== id)
+          return prev.map(i => i.product.id === id ? { ...i, quantity: qty } : i)
+        })
+        return
+      }
+    } catch (e) {
+      // fallback to local
+    }
+
+    // Local fallback
     setCart((prev) => prev.map(item => item.product.id === id ? { ...item, quantity: item.quantity - 1 } : item).filter(i => i.quantity > 0));
   };
 
-  const handleAddOne = (id: string) => {
+  const handleAddOne = async (id: string) => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+    try {
+      const res = await fetch(`${API_BASE}/api/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: id, quantity: 1 })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const item = data.item
+        setCart((prev) => {
+          if (!item || !item.product) return prev
+          const qty = Number(item.quantity || 0)
+          const exists = prev.find(i => i.product.id === item.product.id)
+          if (exists) {
+            return prev.map(i => i.product.id === item.product.id ? { ...i, quantity: qty } : i)
+          }
+          return [...prev, { product: item.product, quantity: qty }]
+        })
+        return
+      }
+    } catch (e) {
+      // fallback local
+    }
+
     setCart((prev) => prev.map(item => item.product.id === id ? { ...item, quantity: item.quantity + 1 } : item));
   };
 
-  const handleClearCart = () => setCart([]);
+  const handleClearCart = async () => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+    let deletedOnServer = false
+    try {
+      const res = await fetch(`${API_BASE}/api/cart`, { method: 'DELETE' })
+      deletedOnServer = res.ok
+    } catch (e) {
+      deletedOnServer = false
+    }
+
+    if (!deletedOnServer) {
+      // fallback: send negative deltas for each item to ensure server removes them
+      await Promise.all(cart.map(async (item) => {
+        try {
+          await fetch(`${API_BASE}/api/cart`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: item.product.id, quantity: -Math.max(1, item.quantity) })
+          })
+        } catch (e) {
+          // ignore individual failures
+        }
+      }))
+    }
+
+    // Clear local state regardless
+    setCart([])
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,6 +186,75 @@ export default function App() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Añadir por id + cantidad (usado por Product page)
+  const addToCartById = async (productId: string, quantity: number = 1) => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+
+    // Intento persistir en backend
+    try {
+      const res = await fetch(`${API_BASE}/api/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, quantity })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const added = data.item
+        if (added && added.product) {
+          setCart((prev) => {
+            const exists = prev.find(i => i.product.id === added.product.id)
+            if (exists) {
+              return prev.map(i => i.product.id === added.product.id ? { ...i, quantity: added.quantity } : i)
+            }
+            return [...prev, { product: added.product, quantity: added.quantity }]
+          })
+          return
+        }
+      }
+    } catch (err) {
+      // si falla, continuamos al fallback local
+    }
+
+    // Fallback: intentar obtener producto desde API o desde el JSON local
+    let product: Product | null = null
+    try {
+      const pRes = await fetch(`${API_BASE}/api/products/${productId}`)
+      if (pRes.ok) {
+        const pd = await pRes.json()
+        const prod = pd.product
+        if (prod) product = { id: prod.id, name: prod.name ?? prod.title ?? 'Producto', price: prod.price ?? 0, img: prod.img ?? prod.image ?? '' }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (!product) {
+      try {
+        const local = await fetch('/products.json')
+        if (local.ok) {
+          const localData = await local.json()
+          const found = (localData.products || []).find((p: any) => String(p.id) === String(productId))
+          if (found) product = { id: found.id, name: found.name || found.title || 'Producto', price: found.price || 0, img: found.img || found.image || '' }
+        }
+      } catch (e) {
+        // no-op
+      }
+    }
+
+    if (!product) return
+
+    // Actualizar carrito local
+    setCart((prev) => {
+      const exists = prev.find(i => i.product.id === product!.id)
+      if (exists) {
+        return prev.map(i => i.product.id === product!.id ? { ...i, quantity: i.quantity + quantity } : i)
+      }
+      return [...prev, { product: product!, quantity }]
+    })
+  }
+
 
   return (
     <BrowserRouter>
@@ -107,7 +296,7 @@ export default function App() {
             <Route path="/" element={<Home onAddToCart={handleAddToCart} searchTerm={searchTerm} />} /> 
             <Route path="/checkout" element={<Checkout cart={cart} onAddOne={handleAddOne} onRemoveOne={handleRemoveOne} onClear={handleClearCart} />} />
             <Route path="/payment" element={<Payment cart={cart} onClear={handleClearCart} />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/product/:id" element={<ProductDetail onAddToCart={addToCartById} />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/settings" element={<SettingsPage />} />

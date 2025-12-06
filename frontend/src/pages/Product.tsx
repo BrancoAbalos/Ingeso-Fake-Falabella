@@ -19,20 +19,52 @@ export default function Product({ onAddToCart }: ProductProps){
 
   useEffect(() => {
     let mounted = true
-    fetch('/products.json')
-      .then(r => r.json())
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+
+    fetch(`${API_BASE}/api/products/${id}`)
+      .then((r) => {
+        if (!r.ok) throw new Error('Not found')
+        return r.json()
+      })
       .then((data) => {
         if (!mounted) return
-        const all: ProductType[] = (data.products || [])
-        const found = all.find(p => String(p.id) === String(id))
-        if (found) setProduct(found)
-        else setProduct(null)
-        const featuredList = all.filter((p) => p.isFeatured && String(p.id) !== String(id))
-        setFeatured(featuredList)
+        const prod = (data && data.product) ? data.product as ProductType : null
+        if (prod) {
+          setProduct(prod)
+          // load other featured products via products list
+          fetch(`${API_BASE}/api/products`).then(r => r.json()).then(d => {
+            if (!mounted) return
+            const all: ProductType[] = d.products || []
+            const featuredList = all.filter((p) => p.isFeatured && String(p.id) !== String(id))
+            setFeatured(featuredList)
+          }).catch(() => {})
+        } else {
+          // fallback to local file
+          fetch('/products.json').then(r => r.json()).then((data) => {
+            if (!mounted) return
+            const all: ProductType[] = data.products || []
+            const found = all.find(p => String(p.id) === String(id))
+            if (found) setProduct(found)
+            else setProduct(null)
+            const featuredList = all.filter((p) => p.isFeatured && String(p.id) !== String(id))
+            setFeatured(featuredList)
+          }).catch(err => { if (mounted) setError(String(err)) })
+        }
       })
-      .catch((err) => {
-        if (!mounted) return
-        setError(String(err))
+      .catch(() => {
+        // backend request failed -> fallback to local
+        fetch('/products.json')
+          .then(r => r.json())
+          .then((data) => {
+            if (!mounted) return
+            const all: ProductType[] = data.products || []
+            const found = all.find(p => String(p.id) === String(id))
+            if (found) setProduct(found)
+            else setProduct(null)
+            const featuredList = all.filter((p) => p.isFeatured && String(p.id) !== String(id))
+            setFeatured(featuredList)
+          })
+          .catch((err) => { if (!mounted) return; setError(String(err)) })
       })
       .finally(() => mounted && setLoading(false))
 

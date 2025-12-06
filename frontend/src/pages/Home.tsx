@@ -4,7 +4,7 @@ import { Product as AppProduct } from '../App';
 
 // Json
 type TopPick = { id: string; name: string; productId?: string; img: string; label?: string }
-type JsonProduct = { id: string; name?: string; title?: string; price: number; img: string; isFeatured?: boolean; description?: string }
+type JsonProduct = { id: string; name?: string; title?: string; price: number; img: string; isFeatured?: boolean; description?: string; categoria?: string }
 
 // Cargar papu datos
 const useMockProducts = () => {
@@ -15,31 +15,47 @@ const useMockProducts = () => {
 
   useEffect(() => {
     let mounted = true
-    fetch('/products.json')
-      .then((r) => r.json())
-      .then((data) => {
+    const API_BASE = ((import.meta as any).env?.VITE_API_BASE as string) || 'http://localhost:3001'
+
+    ;(async () => {
+      try {
+        // Try backend
+        const res = await fetch(`${API_BASE}/api/products`)
+        if (res.ok) {
+          const data = await res.json()
+          if (!mounted) return
+          const prods: JsonProduct[] = data.products || []
+          if (data.topPicks && Array.isArray(data.topPicks) && data.topPicks.length > 0) {
+            setTopPicks(data.topPicks)
+          } else {
+            const derived: TopPick[] = prods.filter((p) => p.isFeatured).map((p) => ({ id: p.id, name: p.name ?? p.title ?? '', productId: p.id, img: p.img }))
+            setTopPicks(derived)
+          }
+          setProducts(prods)
+          return
+        }
+
+        // Fallback to local file
+        const local = await fetch('/products.json')
+        const localData = await local.json()
         if (!mounted) return
-        const loadedProducts: JsonProduct[] = data.products || []
-        
-        if (data.topPicks && Array.isArray(data.topPicks) && data.topPicks.length > 0) {
-          setTopPicks(data.topPicks)
+        const prodsLocal: JsonProduct[] = localData.products || []
+        if (localData.topPicks && Array.isArray(localData.topPicks) && localData.topPicks.length > 0) {
+          setTopPicks(localData.topPicks)
         } else {
-          // Si no hay topPicks explícitos, derivamos de los destacados
-          const derived: TopPick[] = (loadedProducts.filter((p: JsonProduct) => p.isFeatured))
-            .map((p) => ({ id: p.id, name: p.name ?? p.title ?? '', productId: p.id, img: p.img }))
+          const derived: TopPick[] = prodsLocal.filter((p) => p.isFeatured).map((p) => ({ id: p.id, name: p.name ?? p.title ?? '', productId: p.id, img: p.img }))
           setTopPicks(derived)
         }
-        setProducts(loadedProducts)
-      })
-      .catch((err) => {
+        setProducts(prodsLocal)
+      } catch (err) {
         if (!mounted) return
         setError(String(err))
-      })
-      .finally(() => mounted && setLoading(false))
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
 
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [])
 
   return { topPicks, products, loading, error }
@@ -54,9 +70,18 @@ interface HomeProps {
 export default function Home({ onAddToCart, searchTerm }: HomeProps) {
   const { topPicks, products, loading, error } = useMockProducts()
 
-  const filteredProducts = products.filter(product => 
-    product.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [selectedCategory, setSelectedCategory] = React.useState<string>('all')
+
+  // derive categories from products
+  const categories = React.useMemo(() => {
+    const set = new Set<string>()
+    products.forEach(p => { if (p.categoria) set.add(p.categoria) })
+    return Array.from(set)
+  }, [products])
+
+  const filteredProducts = products
+    .filter(product => product.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(product => selectedCategory === 'all' ? true : (product.categoria ?? '').toLowerCase() === selectedCategory.toLowerCase())
 
   // Función para normalizar y agregar al carrito
   const handleAddClick = (e: React.MouseEvent, item: JsonProduct) => {
@@ -101,6 +126,18 @@ export default function Home({ onAddToCart, searchTerm }: HomeProps) {
         <h2 className="text-gray-700 font-bold text-2xl mb-6 drop-shadow-sm">
             {searchTerm ? `Resultados de "${searchTerm}"` : 'Catálogo'}
         </h2>
+        {/* Category filters */}
+        <div className="mb-4 flex flex-wrap gap-2 items-center">
+          <button onClick={() => setSelectedCategory('all')} className={`px-3 py-1 rounded-full ${selectedCategory === 'all' ? 'bg-[#3E2723] text-white' : 'bg-white/50 text-gray-800'}`}>Todos</button>
+          {categories.map((c) => (
+            <button key={c} onClick={() => setSelectedCategory(c)} className={`px-3 py-1 rounded-full ${selectedCategory === c ? 'bg-[#3E2723] text-white' : 'bg-white/50 text-gray-800'}`}>
+              {c}
+            </button>
+          ))}
+          {selectedCategory !== 'all' && (
+            <button onClick={() => setSelectedCategory('all')} className="ml-2 text-sm text-gray-600 underline">Limpiar</button>
+          )}
+        </div>
         
         {loading && <div className="text-center py-10 font-bold text-gray-600">Cargando productos...</div>}
         {error && <div className="text-center text-red-600 py-10">{error}</div>}
